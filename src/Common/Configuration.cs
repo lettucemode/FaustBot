@@ -19,6 +19,8 @@ namespace FaustBot
         public string Prefix { get; set; } = "!";
         /// <summary> Your bot's login token. </summary>
         public string Token { get; set; } = "";
+        /// <summary> Table of matchup tips! </summary>
+        public Common.MUTipCollection Tips { get; set; }
 
         public static void EnsureExists()
         {

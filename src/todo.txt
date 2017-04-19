@@ -1,4 +1,3 @@
-﻿-Add the rest of the items by just linking their images from the wiki (maybe resize?)
--realistic item probabilities
--!kanchou command (challenge other server members?)
--matchup tips
+﻿- move item stuff to config file
+- !kanchou command (challenge other server members?)
+- finish matchup tips
