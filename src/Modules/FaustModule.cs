@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using FaustBot.Preconditions;
 using System;
 using System.Collections.Generic;
@@ -10,35 +11,50 @@ namespace FaustBot.Modules
     [Name("Faust")]
     public class FaustModule : ModuleBase<SocketCommandContext>
     {
-        private static string[] items = new string[] 
-        {
-            ":doughnut:",
-            ":chocolate_bar:",
-            ":hammer:",
-            "http://www.dustloop.com/wiki/images/5/50/GGXRD_Faust_ChibiFaust.png",
-            ":bomb:",
-            ":comet:",
-            "http://www.dustloop.com/wiki/images/thumb/a/aa/GGXRD_Faust_Poison.png/140px-GGXRD_Faust_Poison.png",
-            "http://www.dustloop.com/wiki/images/thumb/8/83/GGXRD_Faust_100TonWeight.png/175px-GGXRD_Faust_100TonWeight.png",
-            ":oil:",
-            "http://www.dustloop.com/wiki/images/thumb/7/7b/GGXRD_Faust_JumpPad.png/175px-GGXRD_Faust_JumpPad.png",
-            "http://www.dustloop.com/wiki/images/1/13/GGXRD_Faust_BlackHole.png",
-            "http://www.dustloop.com/wiki/images/thumb/9/98/GGXRD_Faust_HeliumGas.png/118px-GGXRD_Faust_HeliumGas.png"
-        };
         private static double[] probs = new double[]
         {
-            9.6d,   //donut
-            8.3d,   //chocolate
-            16.6d,  //hammer
-            16.9d,  //minifaust
-            14.4d,  //bomb
-            5.5d,   //meteors
-            9d,     //poison
-            3.7d,   //weight
-            6d,     //oil
-            3.6d,   //jump pad
-            4d,     //black hole
-            2.4d    //helium
+            2.3d,   //helium
+            3.4d,   //platform
+            3.7d,   //100-ton weight
+            3.15d,  //black hole
+            5.15d,  //meteors
+            4.95d,  //oil
+            11.05d, //chocolate
+            9.95d,  //poison
+            8.45d,  //doughnut
+            12.05d, //bomb
+            12.4d,  //hammer
+            15.5d,  //mini faust
+            1.7d,   //fireworks
+            .5d,    //massive meteor
+            .95d,   //golden hammer
+            1.9d,   //big faust
+            .75d,   //golden chocolate
+            .75d,   //box of doughnuts
+            .4d,    //1000-ton weight
+        };
+        //image album: https://imgur.com/a/y1qev
+        private static string[] items = new string[] 
+        {
+            "https://i.imgur.com/L8iqDFE.png",
+            "https://i.imgur.com/vull3Pn.png",
+            "https://i.imgur.com/wpLjyjY.png",
+            "https://i.imgur.com/Ie1MWKC.png",
+            "http://www.dustloop.com/wiki/images/thumb/8/89/GGXRD_Faust_Meteors.png/174px-GGXRD_Faust_Meteors.png",
+            "https://i.imgur.com/DEdTB4c.png",
+            "https://i.imgur.com/iyJWfzS.png",
+            "https://i.imgur.com/HpoZuAc.png",
+            "https://i.imgur.com/2ky0DcA.png",
+            "https://i.imgur.com/lN78xNm.png",
+            "https://i.imgur.com/GwNY1W5.png",
+            "https://i.imgur.com/devW3ba.png",
+            "https://pbs.twimg.com/media/C_ZP9_1UMAIwHqK.jpg",
+            "https://i1.wp.com/glitchcat.com/wp-content/uploads/2017/02/Faust-new-item_Giant-Meteor.jpg",
+            "https://i.imgur.com/1Xznk8g.png",
+            "http://www.dustloop.com/wiki/images/5/50/GGXRD_Faust_ChibiFaust.png",
+            "https://i.imgur.com/dGuLZGv.png",
+            "https://i.imgur.com/NoWf8jl.png",
+            "https://i.imgur.com/o9Tk9vs.png"
         };
         private double[] accum;
         private string kanchou1 = "<:kanchou1:303272976998989824>";
@@ -60,27 +76,39 @@ namespace FaustBot.Modules
         [Command("item")]
         [Remarks("Toss a random item!")]
         [MinPermissions(AccessLevel.User)]
-        public async Task Item()
+        public async Task Item(int meter = 0)
         {
-            //binary search
-            double roll = rand.NextDouble() * accum[accum.Length - 1];
-            int L = 0;
-            int R = accum.Length - 1;
-            int i = -1;
-            while (i == -1)
+            if (meter != 0 && meter != 50 && meter != 100) meter = 0;
+
+            //nani ga deru kana?
+            int punctRoll = rand.Next(3);
+            string punct = (punctRoll == 0 ? "?" : punctRoll == 1 ? "!" : "!?");
+            string nani = (meter == 100 ? "nanananananananananani" : meter == 50 ? "Na-na-na-nani" : "Nani") + " ga deru kana";
+            await ReplyAsync(nani + punct);
+
+            int itemNum = meter == 100 ? 10 : meter == 50 ? 4 : 1;
+            for (int k = 0; k < itemNum; ++k)
             {
-                int M = (L + R) / 2;
-                double left = M == 0 ? 0 : accum[M - 1];
-                double right = accum[M];
-                if (left <= roll && roll < right) i = M;
-                else if (roll < left) R = M - 1;
-                else if (roll > right) L = M + 1;
+                //binary search
+                double roll = rand.NextDouble() * accum[accum.Length - 1];
+                int L = 0;
+                int R = accum.Length - 1;
+                int i = -1;
+                while (i == -1)
+                {
+                    int M = (L + R) / 2;
+                    double left = M == 0 ? 0 : accum[M - 1];
+                    double right = accum[M];
+                    if (left <= roll && roll < right) i = M;
+                    else if (roll < left) R = M - 1;
+                    else if (roll > right) L = M + 1;
+                }
+
+                var embed = new EmbedBuilder().WithImageUrl(items[i]);
+                await ReplyAsync("", embed: embed);
+                //await ReplyAsync(items[i]);
             }
 
-            //send it
-            int punct = rand.Next(3);
-            string nani = "Nani ga deru kana" + (punct == 0 ? "?" : punct == 1 ? "!" : "!?");
-            await ReplyAsync(nani + " " + items[i]);
         }
 
         [Command("kanchou")]
@@ -88,6 +116,7 @@ namespace FaustBot.Modules
         [MinPermissions(AccessLevel.User)]
         public async Task Kanchou()
         {
+            //await ReplyAsync("test");
             await ReplyAsync(kanchou1 + kanchou2);
         }
 

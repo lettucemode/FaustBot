@@ -20,7 +20,7 @@ namespace FaustBot.Preconditions
             Level = level;
         }
 
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IDependencyMap map)
+        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var access = GetPermission(context);            // Get the acccesslevel for this context
 
@@ -29,7 +29,7 @@ namespace FaustBot.Preconditions
             else
                 return Task.FromResult(PreconditionResult.FromError("Insufficient permissions."));
         }
-        
+
         public AccessLevel GetPermission(ICommandContext c)
         {
             if (c.User.IsBot)                                    // Prevent other bots from executing commands.

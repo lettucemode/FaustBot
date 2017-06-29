@@ -36,6 +36,7 @@ namespace FaustBot
                 msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {                                                         // Try and execute a command with the given context.
                 var result = await _cmds.ExecuteAsync(context, argPos);
+                s.Channel.
 
                 //if (!result.IsSuccess)                                // If execution failed, reply with the error message.
                 //    await context.Channel.SendMessageAsync(result.ToString());
